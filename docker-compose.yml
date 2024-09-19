@@ -35,7 +35,7 @@ services:
 
   postgres:
     environment:
-      POSTGRES_DB: bracket_dev
+      POSTGRES_DB: bracket_dev 
       POSTGRES_PASSWORD: bracket_dev
       POSTGRES_USER: bracket_dev
     image: postgres
@@ -44,3 +44,17 @@ services:
     restart: always
     volumes:
       - bracket_pg_data:/var/lib/postgresql/data
+
+  playwright:
+    environment:
+      FRONTEND_BASE_URL: http://localhost:3000
+      BACKEND_BASE_URL: http://localhost:8400
+    image: mcr.microsoft.com/playwright:v1.47.1-noble
+    depends_on:
+      - bracket-backend
+      - bracket-frontend
+    volumes:
+      - ./playwright:/app  # Mounts your project folder to /app in the container
+    working_dir: /app  # Sets the working directory
+    command: ["npx", "playwright", "test"]  # Runs the Playwright tests by default
+    tty: true  # Required for interactive mode (e.g., when running Playwright in headed mode)
